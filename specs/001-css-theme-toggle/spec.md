@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-css-theme-toggle`  
 **Created**: 2025-07-17  
-**Status**: Draft  
+**Status**: Clarified  
 **Input**: Add Black/White css themes — switch happens with radio button on UI
 
 ## User Scenarios & Testing *(mandatory)*
@@ -51,36 +51,54 @@ A user selects a theme, closes or refreshes the browser, and returns to the appl
 ### Functional Requirements
 
 - **FR-001**: The application MUST display a radio button control offering exactly two theme options: "Black" (dark theme) and "White" (light theme).
-- **FR-002**: The radio button control MUST be visible and accessible on the application's UI at all times (not hidden in settings menus requiring multiple clicks).
+- **FR-002**: The radio button control MUST be placed in the **header/navigation bar**, ensuring it is always visible on every page of the application without requiring navigation to a settings screen.
 - **FR-003**: Selecting a theme option via the radio button MUST update the application's visual appearance immediately, with no page reload required.
-- **FR-004**: The dark theme MUST apply a consistent dark colour palette (dark backgrounds, appropriately contrasting text and UI elements) across the entire application.
-- **FR-005**: The light theme MUST apply a consistent light colour palette (light backgrounds, appropriately contrasting text and UI elements) across the entire application.
-- **FR-006**: The selected theme MUST be persisted across browser sessions so that returning users see their last chosen theme on page load.
-- **FR-007**: On first visit (no stored preference), the application MUST default to the light/white theme.
+- **FR-004**: The dark ("Black") theme MUST use CSS variables with `background-color: #000000` and `color: #ffffff` applied globally across **all pages** of the application.
+- **FR-005**: The light ("White") theme MUST use CSS variables with `background-color: #ffffff` and `color: #000000` applied globally across **all pages** of the application.
+- **FR-006**: The selected theme MUST be persisted in **`localStorage`** under the key `theme-preference` with values `"black"` or `"white"`. No server-side storage is used.
+- **FR-007**: On first visit (no stored `theme-preference` key present), the application MUST default to the **white/light theme**. The OS/browser `prefers-color-scheme` setting MUST be ignored; the white default applies regardless.
 - **FR-008**: The radio button MUST visually reflect the currently active theme (i.e., the correct option appears selected at all times, including on page load from a persisted preference).
 - **FR-009**: The theme toggle control MUST be operable via keyboard alone (without requiring a mouse or pointer device).
-- **FR-010**: If the stored theme preference cannot be read or is invalid, the application MUST silently fall back to the default light theme without displaying an error to the user.
+- **FR-010**: If the stored `theme-preference` value cannot be read or is not one of the expected values (`"black"` or `"white"`), the application MUST silently fall back to the default white theme without displaying an error to the user.
+- **FR-011**: Theme switching MUST be implemented using **CSS custom properties (variables)** on the `:root` element. A data attribute or class on `<html>` or `<body>` selects the active variable set; no full class-swap of individual elements is used.
+- **FR-012**: To prevent flash-of-unstyled-content (FOUC), an **inline `<script>` block placed in `<head>`** MUST read `localStorage.getItem('theme-preference')` and apply the correct theme attribute before the page renders.
 
 ### Key Entities
 
-- **Theme Preference**: Represents the user's chosen visual theme. Attributes: theme name ("black" or "white"), timestamp of last change. Stored client-side and loaded on application initialisation.
-- **Theme Definition**: Represents the set of colour and style rules associated with each named theme. Each theme definition covers all visible UI surfaces (backgrounds, text, borders, interactive elements).
+- **Theme Preference**: The user's chosen visual theme. Stored in `localStorage` under the key `theme-preference`. Valid values: `"black"` (dark theme) or `"white"` (light theme). Loaded at page initialisation via an inline `<head>` script. Invalid or absent values resolve to `"white"`.
+- **Theme Definition**: The set of CSS custom properties for each theme, declared at `:root` level. White theme: `--bg: #ffffff; --fg: #000000`. Black theme: `--bg: #000000; --fg: #ffffff`. Definitions cover all visible UI surfaces (backgrounds, text, borders, interactive elements).
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
 - **SC-001**: Users can switch between the black and white themes using only the radio button control, with the full visual change visible within 300 milliseconds of selection.
-- **SC-002**: The selected theme is correctly restored on 100% of page reloads when a valid preference has previously been stored.
-- **SC-003**: The theme radio button control is reachable and operable using keyboard navigation alone, satisfying basic accessibility expectations.
-- **SC-004**: No visible performance degradation (such as page reflow, extended load time, or layout shift) occurs as a result of applying or switching themes.
-- **SC-005**: Both themes maintain sufficient colour contrast across all major UI elements to remain readable under normal viewing conditions.
+- **SC-002**: The selected theme is correctly restored on 100% of page reloads when a valid preference (`"black"` or `"white"`) has previously been stored in `localStorage`.
+- **SC-003**: The theme radio button control is reachable and operable using keyboard navigation alone, meeting **WCAG AA** keyboard accessibility requirements.
+- **SC-004**: No visible FOUC, page reflow, or layout shift occurs during theme application on page load (inline `<head>` script ensures theme is set before first paint).
+- **SC-005**: Both themes achieve **WCAG AA colour contrast compliance**: minimum **4.5:1** contrast ratio for normal text and **3:1** for large text across all major UI elements.
+- **SC-006**: The theme switch applies globally — all pages of the application reflect the selected theme immediately after switching, with no page-specific overrides.
 
 ## Assumptions
 
-- The application is a web-based frontend; theme switching is achieved via CSS (e.g., swapping a class on a root element) without server-side involvement.
-- Theme preference persistence uses browser-level client storage (e.g., localStorage); no user account or server-side profile storage is required for this feature.
+- The application is a web-based frontend; theme switching is achieved via **CSS custom properties (variables)** on `:root` — not by swapping large class sets on individual elements.
+- Theme preference persistence uses **`localStorage`** exclusively (key: `theme-preference`, values: `"black"` / `"white"`). No user account or server-side profile storage is required for this feature.
 - Only two themes (black/dark and white/light) are in scope for this ticket; the design does not need to accommodate additional themes at this stage.
-- The existing design guidelines define or can be extended to define the colour palettes for both themes; no entirely new design system is required.
-- The radio button control is rendered as part of the application's existing UI (e.g., in a header or toolbar); the exact placement within the layout is a design decision to be resolved during planning.
+- No external design-system assets are required. Colour palettes are fully defined by the CSS variable values agreed in clarification: white theme `#ffffff`/`#000000`, black theme `#000000`/`#ffffff`.
+- The radio button control is rendered in the **header/navigation bar** so it is always visible on every page.
 - The feature does not require any changes to back-end services, user accounts, or authentication.
+- The OS/browser `prefers-color-scheme` media feature is **intentionally ignored**; the default is always white unless the user has explicitly saved a preference.
+
+## Clarifications
+
+### Session 2026-04-10
+
+- Q: Where should the radio button control be placed in the UI? → A: Header/navigation bar — always visible on every page (Option A).
+- Q: How should the selected theme be persisted? → A: `localStorage` (client-side only); key `theme-preference`, values `"black"` or `"white"`. No server-side storage.
+- Q: What colour values and design guidelines apply to each theme? → A: CSS variables only. White theme: `#ffffff` background, `#000000` text. Black theme: `#000000` background, `#ffffff` text. Standard contrast ratios apply.
+- Q: Which pages does the theme switch affect? → A: All pages of the application globally.
+- Q: What accessibility standard must the themes meet? → A: WCAG AA — minimum 4.5:1 contrast for normal text, 3:1 for large text.
+- Q: Which CSS strategy should be used for theming? → A: CSS custom properties (variables) on `:root`; not class-swap.
+- Q: What is the default theme on first visit? → A: White (light) theme.
+- Q: Should the OS `prefers-color-scheme` setting be respected? → A: No — always default to white unless user has an explicit saved preference.
+- Q: How should FOUC be prevented? → A: Inline `<script>` in `<head>` reads `localStorage` and sets the theme attribute before first paint.
