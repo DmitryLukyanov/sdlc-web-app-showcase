@@ -84,6 +84,11 @@
     <p>Data is for demonstration purposes only. Last updated: <span id="last-updated"></span></p>
   </footer>
 
+  <!-- Load order matters: providers must be defined before the registry,
+       and the registry must exist before weather.js reads it. -->
+  <script src="providers/primaryProvider.js"></script>
+  <script src="providers/mockProvider.js"></script>
+  <script src="providerRegistry.js"></script>
   <script src="theme.js"></script>
   <script src="weather.js"></script>
   <script>
