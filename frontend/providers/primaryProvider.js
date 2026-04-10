@@ -4,7 +4,7 @@
  * Primary Weather Provider
  *
  * Wraps the existing 10-city weather dataset as a WeatherProvider implementation.
- * The `weatherData` array is inlined here rather than imported from `weather.js`
+ * The dataset array is inlined here rather than imported from `weather.js`
  * to avoid a circular dependency: `weather.js` will eventually require
  * `providerRegistry.js`, which requires both providers; importing `weather.js`
  * from here would create a cycle that breaks module initialisation in Node/Jest.
@@ -14,10 +14,10 @@
  */
 
 /**
- * Raw 10-city weather dataset. Inlined to avoid circular dependency with weather.js.
+ * Raw 10-city weather dataset (private to this module in the browser — not a global).
  * @type {Array<import('../weather').WeatherRecord>}
  */
-var weatherData = [
+var primaryProviderDataset = [
   {
     city: 'New York',
     state: 'NY',
@@ -129,9 +129,9 @@ var PrimaryWeatherProvider = {
   getByCity: function (cityName) {
     if (!cityName) return null;
     var lower = cityName.trim().toLowerCase();
-    for (var i = 0; i < weatherData.length; i++) {
-      if (weatherData[i].city.toLowerCase() === lower) {
-        return weatherData[i];
+    for (var i = 0; i < primaryProviderDataset.length; i++) {
+      if (primaryProviderDataset[i].city.toLowerCase() === lower) {
+        return primaryProviderDataset[i];
       }
     }
     return null;
@@ -143,7 +143,7 @@ var PrimaryWeatherProvider = {
    * @returns {Array<Object>} Shallow copy of the full 10-city dataset.
    */
   getAll: function () {
-    return weatherData.slice();
+    return primaryProviderDataset.slice();
   },
 };
 
