@@ -84,6 +84,20 @@
     },
 
     /**
+     * Returns all registered provider IDs in registration order.
+     *
+     * Each element is the string `id` supplied when the provider was registered.
+     * Returns a new array on every call so mutations do not affect the internal
+     * Map — callers may safely modify the returned array.
+     * This method never throws; an empty registry returns an empty array.
+     *
+     * @returns {Array<string>} Ordered array of provider id strings.
+     */
+    listProviders: function () {
+      return Array.from(_providers.keys());
+    },
+
+    /**
      * Returns weather data for a specific city from the specified provider.
      *
      * @param {string} city - City name to look up (alias-aware, case-insensitive per provider).

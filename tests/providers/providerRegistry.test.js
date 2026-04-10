@@ -160,3 +160,45 @@ describe('WeatherProviderRegistry — extensibility (US3)', () => {
     expect(WeatherProviderRegistry.getAllWeatherData('mock')).toHaveLength(3);
   });
 });
+
+// ── listProviders() (T003) ────────────────────────────────────────────────────
+
+describe('WeatherProviderRegistry — listProviders()', () => {
+  test('returns an array', () => {
+    expect(Array.isArray(WeatherProviderRegistry.listProviders())).toBe(true);
+  });
+
+  test('returns at least ["primary", "mock"] after module load', () => {
+    const ids = WeatherProviderRegistry.listProviders();
+    expect(ids).toContain('primary');
+    expect(ids).toContain('mock');
+  });
+
+  test('returns provider IDs in registration order (primary before mock)', () => {
+    const ids = WeatherProviderRegistry.listProviders();
+    const primaryIdx = ids.indexOf('primary');
+    const mockIdx = ids.indexOf('mock');
+    expect(primaryIdx).toBeGreaterThanOrEqual(0);
+    expect(mockIdx).toBeGreaterThanOrEqual(0);
+    expect(primaryIdx).toBeLessThan(mockIdx);
+  });
+
+  test('reflects a runtime-registered third provider', () => {
+    const thirdProv = { id: 'third', getByCity: () => null, getAll: () => [] };
+    WeatherProviderRegistry.register(thirdProv);
+    const ids = WeatherProviderRegistry.listProviders();
+    expect(ids).toContain('third');
+  });
+
+  test('returns a new array — mutations do not affect the registry', () => {
+    const ids = WeatherProviderRegistry.listProviders();
+    ids.push('injected');
+    const ids2 = WeatherProviderRegistry.listProviders();
+    expect(ids2).not.toContain('injected');
+  });
+
+  test('never throws even when called multiple times', () => {
+    expect(() => WeatherProviderRegistry.listProviders()).not.toThrow();
+    expect(() => WeatherProviderRegistry.listProviders()).not.toThrow();
+  });
+});

@@ -22,7 +22,7 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 **Purpose**: Understand the existing integration points before making any changes
 
-- [ ] T001 Audit `frontend/providerRegistry.js`, `frontend/weather.js`, `frontend/weather.html`, and `tests/` to confirm current provider registration flow, static `weatherData` array usage, and existing test coverage baseline
+- [X] T001 Audit `frontend/providerRegistry.js`, `frontend/weather.js`, `frontend/weather.html`, and `tests/` to confirm current provider registration flow, static `weatherData` array usage, and existing test coverage baseline
 
 ---
 
@@ -32,8 +32,8 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 **⚠️ CRITICAL**: T002 and T003 MUST be complete before any User Story phase begins
 
-- [ ] T002 Add `listProviders()` method to `WeatherProviderRegistry` in `frontend/providerRegistry.js` that returns `Array.from(_providers.keys())` as a new array; method must never throw
-- [ ] T003 [P] Extend `tests/providers/providerRegistry.test.js` with tests for `listProviders()`: returns array of IDs in registration order, returns at least `["primary", "mock"]` after module load, reflects a runtime-registered third provider, and returns a new array (mutations do not affect the registry)
+- [X] T002 Add `listProviders()` method to `WeatherProviderRegistry` in `frontend/providerRegistry.js` that returns `Array.from(_providers.keys())` as a new array; method must never throw
+- [X] T003 [P] Extend `tests/providers/providerRegistry.test.js` with tests for `listProviders()`: returns array of IDs in registration order, returns at least `["primary", "mock"]` after module load, reflects a runtime-registered third provider, and returns a new array (mutations do not affect the registry)
 
 **Checkpoint**: `WeatherProviderRegistry.listProviders()` is implemented and all `providerRegistry.test.js` tests pass (`npm test`)
 
@@ -47,15 +47,15 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 ### Tests for User Story 1
 
-- [ ] T004 [P] [US1] Add tests for `WeatherApp.getAllFromAllProviders()` in `tests/weather.test.js`: correct total record count (13), every record has a non-empty `providerName` field equal to a registered provider ID, a simulated failing provider populates `failedProviders` array with its ID while still returning successful providers' records, and `failedProviders` is `[]` when all providers succeed
-- [ ] T005 [P] [US1] Create `tests/weather.html.test.js` (new file) and write DOM integration tests for: page load renders 13 rows in `#weather-body`, `getAllFromAllProviders()` is called on page init, a non-blocking `div.provider-warning[role="alert"]` banner appears when a provider fails, and the dismiss button removes the banner from the DOM
+- [X] T004 [P] [US1] Add tests for `WeatherApp.getAllFromAllProviders()` in `tests/weather.test.js`: correct total record count (13), every record has a non-empty `providerName` field equal to a registered provider ID, a simulated failing provider populates `failedProviders` array with its ID while still returning successful providers' records, and `failedProviders` is `[]` when all providers succeed
+- [X] T005 [P] [US1] Create `tests/weather.html.test.js` (new file) and write DOM integration tests for: page load renders 13 rows in `#weather-body`, `getAllFromAllProviders()` is called on page init, a non-blocking `div.provider-warning[role="alert"]` banner appears when a provider fails, and the dismiss button removes the banner from the DOM
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement `WeatherApp.getAllFromAllProviders()` in `frontend/weather.js`: iterate `WeatherProviderRegistry.listProviders()`, call `WeatherProviderRegistry.getAllWeatherData(id)` for each, shallow-copy each record with `Object.assign({}, record, { providerName: id })`, catch per-provider errors into `failedProviders`, and return `{ data: [], failedProviders: [] }`
-- [ ] T007 [US1] Update `WeatherApp.getFilteredData()` in `frontend/weather.js` to operate on `getAllFromAllProviders().data` instead of the static `weatherData` array; preserve backward compatibility by keeping the two-argument signature working (third `providerIds` arg added in Phase 5)
-- [ ] T008 [US1] Update the inline `<script>` in `frontend/weather.html` to call `WeatherApp.getAllFromAllProviders()` on page load, store `{ data, failedProviders }`, pass `data` as the base dataset to the display pipeline, and call the table render function with the aggregated data
-- [ ] T009 [US1] Add non-blocking warning banner logic in `frontend/weather.html` inline script: if `failedProviders.length > 0`, inject `<div class="provider-warning" role="alert">⚠ Could not load data from provider(s): <strong>{ids}</strong>. <button class="provider-warning__dismiss" aria-label="Dismiss">×</button></div>` before `#weather-table`; wire dismiss button to remove the banner from the DOM
+- [X] T006 [US1] Implement `WeatherApp.getAllFromAllProviders()` in `frontend/weather.js`: iterate `WeatherProviderRegistry.listProviders()`, call `WeatherProviderRegistry.getAllWeatherData(id)` for each, shallow-copy each record with `Object.assign({}, record, { providerName: id })`, catch per-provider errors into `failedProviders`, and return `{ data: [], failedProviders: [] }`
+- [X] T007 [US1] Update `WeatherApp.getFilteredData()` in `frontend/weather.js` to operate on `getAllFromAllProviders().data` instead of the static `weatherData` array; preserve backward compatibility by keeping the two-argument signature working (third `providerIds` arg added in Phase 5)
+- [X] T008 [US1] Update the inline `<script>` in `frontend/weather.html` to call `WeatherApp.getAllFromAllProviders()` on page load, store `{ data, failedProviders }`, pass `data` as the base dataset to the display pipeline, and call the table render function with the aggregated data
+- [X] T009 [US1] Add non-blocking warning banner logic in `frontend/weather.html` inline script: if `failedProviders.length > 0`, inject `<div class="provider-warning" role="alert">⚠ Could not load data from provider(s): <strong>{ids}</strong>. <button class="provider-warning__dismiss" aria-label="Dismiss">×</button></div>` before `#weather-table`; wire dismiss button to remove the banner from the DOM
 
 **Checkpoint**: User Story 1 is fully functional — opening `weather.html` shows all 13 records; `npm test` is green
 
@@ -69,12 +69,12 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] Add DOM integration tests in `tests/weather.html.test.js` for: `#weather-table` header contains a `<th>Provider</th>` column as the last header cell, each row in `#weather-body` contains a final `<td>` with `providerName` text, "New York" appears as exactly two rows with different `providerName` values, and a city covered by only one provider appears as exactly one row
+- [X] T010 [P] [US2] Add DOM integration tests in `tests/weather.html.test.js` for: `#weather-table` header contains a `<th>Provider</th>` column as the last header cell, each row in `#weather-body` contains a final `<td>` with `providerName` text, "New York" appears as exactly two rows with different `providerName` values, and a city covered by only one provider appears as exactly one row
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Add `<th>Provider</th>` as the last header cell in the `<thead>` row of `#weather-table` in `frontend/weather.html`
-- [ ] T012 [US2] Update the row-rendering logic in `frontend/weather.html` inline script to append `<td class="provider-badge provider-badge-${row.providerName}">${row.providerName}</td>` as the final cell of every generated `<tr>`
+- [X] T011 [US2] Add `<th>Provider</th>` as the last header cell in the `<thead>` row of `#weather-table` in `frontend/weather.html`
+- [X] T012 [US2] Update the row-rendering logic in `frontend/weather.html` inline script to append `<td class="provider-badge provider-badge-${row.providerName}">${row.providerName}</td>` as the final cell of every generated `<tr>`
 
 **Checkpoint**: User Stories 1 and 2 are both independently functional; "New York" shows two distinct rows; `npm test` is green
 
@@ -88,18 +88,18 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 ### Tests for User Story 3
 
-- [ ] T013 [P] [US3] Add unit tests for `WeatherApp.filterByProvider(data, selectedProviderIds)` in `tests/weather.test.js`: single-provider selection returns only that provider's records, multi-provider selection returns union of their records, empty array returns all records unchanged, `null`/`undefined` returns all records unchanged, and an unknown provider ID returns an empty array
-- [ ] T014 [P] [US3] Add unit tests for updated `WeatherApp.getFilteredData(condition, sortKey, providerIds)` in `tests/weather.test.js`: passing `providerIds=["primary"]` returns only primary records, omitting the third argument returns all records (backward-compatible), and combined condition + providerIds filters apply simultaneously
-- [ ] T015 [P] [US3] Add DOM integration tests for provider filter UI in `tests/weather.html.test.js`: `#filter-provider` fieldset is present, it contains one checkbox per registered provider (labelled with provider `id`) plus `#filter-provider-all`, all checkboxes are checked on page load, unchecking a provider checkbox reduces visible rows to that provider's count, and the "All Providers" checkbox state tracks individual checkboxes correctly
-- [ ] T016 [P] [US3] Add DOM integration tests for combined filtering in `tests/weather.html.test.js`: applying both a condition filter and a provider filter simultaneously shows only records matching both criteria; clearing provider filter (re-checking "All Providers") while a condition filter is active restores all records for that condition
+- [X] T013 [P] [US3] Add unit tests for `WeatherApp.filterByProvider(data, selectedProviderIds)` in `tests/weather.test.js`: single-provider selection returns only that provider's records, multi-provider selection returns union of their records, empty array returns all records unchanged, `null`/`undefined` returns all records unchanged, and an unknown provider ID returns an empty array
+- [X] T014 [P] [US3] Add unit tests for updated `WeatherApp.getFilteredData(condition, sortKey, providerIds)` in `tests/weather.test.js`: passing `providerIds=["primary"]` returns only primary records, omitting the third argument returns all records (backward-compatible), and combined condition + providerIds filters apply simultaneously
+- [X] T015 [P] [US3] Add DOM integration tests for provider filter UI in `tests/weather.html.test.js`: `#filter-provider` fieldset is present, it contains one checkbox per registered provider (labelled with provider `id`) plus `#filter-provider-all`, all checkboxes are checked on page load, unchecking a provider checkbox reduces visible rows to that provider's count, and the "All Providers" checkbox state tracks individual checkboxes correctly
+- [X] T016 [P] [US3] Add DOM integration tests for combined filtering in `tests/weather.html.test.js`: applying both a condition filter and a provider filter simultaneously shows only records matching both criteria; clearing provider filter (re-checking "All Providers") while a condition filter is active restores all records for that condition
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Implement `WeatherApp.filterByProvider(data, selectedProviderIds)` in `frontend/weather.js`: return `data` unchanged when `selectedProviderIds` is falsy or empty; otherwise return `data.filter(r => selectedProviderIds.includes(r.providerName))`; never mutate input; return a new array; never throw
-- [ ] T018 [US3] Update `WeatherApp.getFilteredData()` signature in `frontend/weather.js` to `getFilteredData(condition, sortKey, providerIds)`: chain `filterByCondition → filterByProvider(providerIds || []) → sortData`; default `providerIds` to `[]` so existing two-argument callers continue to work
-- [ ] T019 [US3] Add `<fieldset id="filter-provider" class="provider-filter"><legend>Filter by Provider:</legend></fieldset>` to `frontend/weather.html` and dynamically generate one `<label><input type="checkbox" class="provider-checkbox" value="{id}" checked />{id}</label>` per provider ID from `WeatherProviderRegistry.listProviders()`, plus `<label><input type="checkbox" id="filter-provider-all" checked />All Providers</label>` as the first option
-- [ ] T020 [US3] Implement "All Providers" toggle logic in `frontend/weather.html` inline script: checking `#filter-provider-all` sets all `.provider-checkbox` to `checked=true`; unchecking it sets all to `checked=false`; checking all individual providers auto-checks `#filter-provider-all`; unchecking any individual provider auto-unchecks `#filter-provider-all`
-- [ ] T021 [US3] Wire `.provider-checkbox` change events in `frontend/weather.html` inline script to derive `selectedProviderIds` from all checked `.provider-checkbox` values and call `WeatherApp.getFilteredData(activeCondition, activeSortKey, selectedProviderIds)` to re-render the table; ensure the existing condition `<select>` and sort `<select>` change handlers also pass the current `selectedProviderIds` so both filters always combine (FR-008)
+- [X] T017 [US3] Implement `WeatherApp.filterByProvider(data, selectedProviderIds)` in `frontend/weather.js`: return `data` unchanged when `selectedProviderIds` is falsy or empty; otherwise return `data.filter(r => selectedProviderIds.includes(r.providerName))`; never mutate input; return a new array; never throw
+- [X] T018 [US3] Update `WeatherApp.getFilteredData()` signature in `frontend/weather.js` to `getFilteredData(condition, sortKey, providerIds)`: chain `filterByCondition → filterByProvider(providerIds || []) → sortData`; default `providerIds` to `[]` so existing two-argument callers continue to work
+- [X] T019 [US3] Add `<fieldset id="filter-provider" class="provider-filter"><legend>Filter by Provider:</legend></fieldset>` to `frontend/weather.html` and dynamically generate one `<label><input type="checkbox" class="provider-checkbox" value="{id}" checked />{id}</label>` per provider ID from `WeatherProviderRegistry.listProviders()`, plus `<label><input type="checkbox" id="filter-provider-all" checked />All Providers</label>` as the first option
+- [X] T020 [US3] Implement "All Providers" toggle logic in `frontend/weather.html` inline script: checking `#filter-provider-all` sets all `.provider-checkbox` to `checked=true`; unchecking it sets all to `checked=false`; checking all individual providers auto-checks `#filter-provider-all`; unchecking any individual provider auto-unchecks `#filter-provider-all`
+- [X] T021 [US3] Wire `.provider-checkbox` change events in `frontend/weather.html` inline script to derive `selectedProviderIds` from all checked `.provider-checkbox` values and call `WeatherApp.getFilteredData(activeCondition, activeSortKey, selectedProviderIds)` to re-render the table; ensure the existing condition `<select>` and sort `<select>` change handlers also pass the current `selectedProviderIds` so both filters always combine (FR-008)
 
 **Checkpoint**: All three user stories are independently functional; provider filter works alone and combined with condition filter; `npm test` is fully green
 
@@ -109,9 +109,9 @@ description: "Task list for Multi-Provider Weather Data Display (SDLCSPAC-7)"
 
 **Purpose**: Final quality pass and manual validation per quickstart.md
 
-- [ ] T022 [P] Run the full test suite (`npm test`) and confirm all tests pass with no regressions in `tests/weather.test.js`, `tests/weather.html.test.js`, `tests/providers/providerRegistry.test.js`, `tests/providers/primaryProvider.test.js`, and `tests/providers/mockProvider.test.js`
-- [ ] T023 [P] Add inline code comments in `frontend/weather.js` and `frontend/providerRegistry.js` for non-obvious decisions per research.md (e.g., why `providerName` is stamped at aggregation time, why empty `selectedProviderIds` returns all records, why per-provider try/catch is used)
-- [ ] T024 Manual/integration verification using `quickstart.md` scenarios: page load shows 13 records, unchecking "mock" shows 10, "All Providers" toggle empties and restores table, combined condition + provider filter, simulated provider failure shows warning banner without page error
+- [X] T022 [P] Run the full test suite (`npm test`) and confirm all tests pass with no regressions in `tests/weather.test.js`, `tests/weather.html.test.js`, `tests/providers/providerRegistry.test.js`, `tests/providers/primaryProvider.test.js`, and `tests/providers/mockProvider.test.js`
+- [X] T023 [P] Add inline code comments in `frontend/weather.js` and `frontend/providerRegistry.js` for non-obvious decisions per research.md (e.g., why `providerName` is stamped at aggregation time, why empty `selectedProviderIds` returns all records, why per-provider try/catch is used)
+- [X] T024 Manual/integration verification using `quickstart.md` scenarios: page load shows 13 records, unchecking "mock" shows 10, "All Providers" toggle empties and restores table, combined condition + provider filter, simulated provider failure shows warning banner without page error
 
 ---
 

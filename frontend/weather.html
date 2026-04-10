@@ -48,6 +48,7 @@
         <option value="Rainy">Rainy</option>
         <option value="Stormy">Stormy</option>
         <option value="Windy">Windy</option>
+        <option value="Snow">Snow</option>
       </select>
 
       <label for="sort-by">Sort by:</label>
@@ -57,6 +58,10 @@
         <option value="humidity">Humidity</option>
         <option value="windSpeed">Wind Speed</option>
       </select>
+
+      <fieldset id="filter-provider" class="provider-filter">
+        <legend>Filter by Provider:</legend>
+      </fieldset>
     </section>
 
     <section class="table-container">
@@ -70,6 +75,7 @@
             <th>Humidity (%)</th>
             <th>Wind Speed (mph)</th>
             <th>Forecast Date</th>
+            <th>Provider</th>
           </tr>
         </thead>
         <tbody id="weather-body">
@@ -93,10 +99,6 @@
   <script src="weather.js"></script>
   <script>
     (function () {
-      var filterSelect = document.getElementById('filter-condition');
-      var sortSelect = document.getElementById('sort-by');
-      var tbody = document.getElementById('weather-body');
-      var noResults = document.getElementById('no-results');
       document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US');
 
       // Pre-select the radio button that matches the stored/active theme,
@@ -111,34 +113,8 @@
         });
       }
 
-      function render() {
-        var condition = filterSelect.value;
-        var sortKey = sortSelect.value;
-        var data = WeatherApp.getFilteredData(condition, sortKey);
-
-        tbody.innerHTML = '';
-        if (data.length === 0) {
-          noResults.classList.remove('hidden');
-        } else {
-          noResults.classList.add('hidden');
-          data.forEach(function (row) {
-            var tr = document.createElement('tr');
-            tr.innerHTML =
-              '<td>' + row.city + '</td>' +
-              '<td>' + row.state + '</td>' +
-              '<td><span class="badge badge-' + row.condition.toLowerCase().replace(/ /g, '-') + '">' + row.condition + '</span></td>' +
-              '<td>' + row.temperature + '</td>' +
-              '<td>' + row.humidity + '</td>' +
-              '<td>' + row.windSpeed + '</td>' +
-              '<td>' + row.forecastDate + '</td>';
-            tbody.appendChild(tr);
-          });
-        }
-      }
-
-      filterSelect.addEventListener('change', render);
-      sortSelect.addEventListener('change', render);
-      render();
+      // Initialise provider checkboxes, warning banner, and table rendering.
+      WeatherApp.initPage();
     }());
   </script>
 </body>
