@@ -14,7 +14,8 @@
  */
 
 /**
- * Raw 10-city weather dataset (private to this module in the browser — not a global).
+ * Raw 10-city weather dataset used by this provider implementation.
+ * Declared at file scope in this classic script; treat it as an internal detail.
  * @type {Array<import('../weather').WeatherRecord>}
  */
 var primaryProviderDataset = [
