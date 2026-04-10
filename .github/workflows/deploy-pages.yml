@@ -1,3 +1,4 @@
+# License: Proprietary. All rights reserved.
 # Automated deployment workflow for GitHub Pages
 # Triggered on every push to main (including PR merges)
 #
