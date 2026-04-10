@@ -1,0 +1,20 @@
+{
+  "name": "sdlc-web-app-showcase",
+  "version": "1.0.0",
+  "description": "SDLC Web App Showcase",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint frontend/**/*.js"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/frontend/**/*.test.js"
+    ]
+  }
+}
