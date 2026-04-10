@@ -18,4 +18,9 @@ The issue is that the provided ticket doesn't have description (so didn't pass v
 The jira has appropriate comment:
 <img width="778" height="551" alt="image" src="https://github.com/user-attachments/assets/357849b5-2ead-4ca1-95bc-fa2ba81c9ce9" />
 
+# Jira board is fixed
+
+## Issues and PRs
+<img width="1510" height="445" alt="image" src="https://github.com/user-attachments/assets/59399a7c-b762-4ffd-9f3f-db8e5c272507" />
+
 
