@@ -22,7 +22,7 @@ description: "Task list for Add Black/White CSS Themes (SDLCSPAC-4)"
 
 **Purpose**: Confirm the existing codebase is healthy before any changes are made. Establishes the test baseline that must remain green throughout implementation.
 
-- [ ] T001 Run `npm test` and confirm all tests in tests/weather.test.js pass with zero failures (baseline established)
+- [X] T001 Run `npm test` and confirm all tests in tests/weather.test.js pass with zero failures (baseline established)
 
 ---
 
@@ -32,10 +32,10 @@ description: "Task list for Add Black/White CSS Themes (SDLCSPAC-4)"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Add white-theme default `:root` and `:root[data-theme="white"]` CSS variable block at the top of frontend/weather.css (all 14 `--color-*` variables per data-model.md)
-- [ ] T003 [P] Add black-theme `:root[data-theme="black"]` CSS variable block immediately after the white-theme block in frontend/weather.css
-- [ ] T004 [P] Add `.visually-hidden` utility class at the end of the variable declarations section in frontend/weather.css
-- [ ] T005 Replace all hardcoded colour values throughout frontend/weather.css with their corresponding `var(--color-*)` references (body, header, .controls, table, select, footer, :focus-visible)
+- [X] T002 Add white-theme default `:root` and `:root[data-theme="white"]` CSS variable block at the top of frontend/weather.css (all 14 `--color-*` variables per data-model.md)
+- [X] T003 [P] Add black-theme `:root[data-theme="black"]` CSS variable block immediately after the white-theme block in frontend/weather.css
+- [X] T004 [P] Add `.visually-hidden` utility class at the end of the variable declarations section in frontend/weather.css
+- [X] T005 Replace all hardcoded colour values throughout frontend/weather.css with their corresponding `var(--color-*)` references (body, header, .controls, table, select, footer, :focus-visible)
 
 **Checkpoint**: Open weather.html in a browser with DevTools open — the page must look identical to before. Running `npm test` must still pass all weather tests.
 
@@ -49,20 +49,20 @@ description: "Task list for Add Black/White CSS Themes (SDLCSPAC-4)"
 
 ### Tests for User Story 1 ⚠️ Write FIRST — ensure they FAIL before implementing theme.js
 
-- [ ] T006 [P] [US1] Create tests/theme.test.js with `sanitiseTheme` test cases: valid values (`"white"`, `"black"`) pass through; invalid values (`"dark"`, `""`, `null`, `undefined`, `42`, `"WHITE"`) return `"white"`
-- [ ] T007 [P] [US1] Add `applyTheme` test cases to tests/theme.test.js: verify `document.documentElement.dataset.theme` is set to the sanitised theme; verify `localStorage.setItem('theme-preference', ...)` is called with the correct value; verify invalid input applies `"white"`
-- [ ] T008 [P] [US1] Add `toggleTheme` test cases to tests/theme.test.js: verify it delegates to `applyTheme` after validation; verify invalid input results in `"white"` being applied; verify same-theme re-selection is idempotent with no errors
+- [X] T006 [P] [US1] Create tests/theme.test.js with `sanitiseTheme` test cases: valid values (`"white"`, `"black"`) pass through; invalid values (`"dark"`, `""`, `null`, `undefined`, `42`, `"WHITE"`) return `"white"`
+- [X] T007 [P] [US1] Add `applyTheme` test cases to tests/theme.test.js: verify `document.documentElement.dataset.theme` is set to the sanitised theme; verify `localStorage.setItem('theme-preference', ...)` is called with the correct value; verify invalid input applies `"white"`
+- [X] T008 [P] [US1] Add `toggleTheme` test cases to tests/theme.test.js: verify it delegates to `applyTheme` after validation; verify invalid input results in `"white"` being applied; verify same-theme re-selection is idempotent with no errors
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Create frontend/theme.js with `VALID_THEMES` constant (`["black", "white"]`) and implement `sanitiseTheme(value)` pure function (returns input if in allowlist, otherwise `"white"`)
-- [ ] T010 [US1] Implement `applyTheme(theme)` in frontend/theme.js: call `sanitiseTheme(theme)`, set `document.documentElement.setAttribute('data-theme', validatedTheme)`, and call `localStorage.setItem('theme-preference', validatedTheme)`
-- [ ] T011 [US1] Implement `toggleTheme(theme)` in frontend/theme.js: validate via `sanitiseTheme` then delegate to `applyTheme` (named entry point for radio `change` event handler)
-- [ ] T012 [US1] Add dual-export pattern to frontend/theme.js: `window.ThemeManager = { sanitiseTheme, applyTheme, toggleTheme }` guarded by `typeof window !== 'undefined'`; `module.exports = { sanitiseTheme, applyTheme, toggleTheme }` guarded by `typeof module !== 'undefined' && module.exports` (mirrors weather.js lines 70–75 exactly)
-- [ ] T013 [US1] Add `<script src="theme.js"></script>` tag to frontend/weather.html immediately before the existing `<script src="weather.js">` tag
-- [ ] T014 [US1] Add `<fieldset class="theme-toggle" role="group">` radio button control (with `.visually-hidden` legend "Choose colour theme" and two labelled radio inputs for `value="white"` and `value="black"`) inside the `<header>` element in frontend/weather.html after the existing `<p class="subtitle">` element
-- [ ] T015 [US1] Add radio button `change` event listener IIFE to the existing inline `<script>` block at the bottom of `<body>` in frontend/weather.html: attach `window.ThemeManager.toggleTheme(this.value)` on `change` for all `input[name="theme"]` elements
-- [ ] T016 [US1] Add `.theme-toggle` fieldset, `.theme-toggle__label`, and `.theme-toggle__radio` CSS rules to frontend/weather.css (layout: inline flex row in the header; colours via `var(--color-header-fg)` and `var(--color-header-bg)` so the control is legible in both themes)
+- [X] T009 [US1] Create frontend/theme.js with `VALID_THEMES` constant (`["black", "white"]`) and implement `sanitiseTheme(value)` pure function (returns input if in allowlist, otherwise `"white"`)
+- [X] T010 [US1] Implement `applyTheme(theme)` in frontend/theme.js: call `sanitiseTheme(theme)`, set `document.documentElement.setAttribute('data-theme', validatedTheme)`, and call `localStorage.setItem('theme-preference', validatedTheme)`
+- [X] T011 [US1] Implement `toggleTheme(theme)` in frontend/theme.js: validate via `sanitiseTheme` then delegate to `applyTheme` (named entry point for radio `change` event handler)
+- [X] T012 [US1] Add dual-export pattern to frontend/theme.js: `window.ThemeManager = { sanitiseTheme, applyTheme, toggleTheme }` guarded by `typeof window !== 'undefined'`; `module.exports = { sanitiseTheme, applyTheme, toggleTheme }` guarded by `typeof module !== 'undefined' && module.exports` (mirrors weather.js lines 70–75 exactly)
+- [X] T013 [US1] Add `<script src="theme.js"></script>` tag to frontend/weather.html immediately before the existing `<script src="weather.js">` tag
+- [X] T014 [US1] Add `<fieldset class="theme-toggle" role="group">` radio button control (with `.visually-hidden` legend "Choose colour theme" and two labelled radio inputs for `value="white"` and `value="black"`) inside the `<header>` element in frontend/weather.html after the existing `<p class="subtitle">` element
+- [X] T015 [US1] Add radio button `change` event listener IIFE to the existing inline `<script>` block at the bottom of `<body>` in frontend/weather.html: attach `window.ThemeManager.toggleTheme(this.value)` on `change` for all `input[name="theme"]` elements
+- [X] T016 [US1] Add `.theme-toggle` fieldset, `.theme-toggle__label`, and `.theme-toggle__radio` CSS rules to frontend/weather.css (layout: inline flex row in the header; colours via `var(--color-header-fg)` and `var(--color-header-bg)` so the control is legible in both themes)
 
 **Checkpoint**: Run `npm test` — all tests in tests/theme.test.js and tests/weather.test.js must pass. Open weather.html in a browser: clicking "Black" / "White" radio buttons must switch the full page appearance instantly.
 
@@ -76,13 +76,13 @@ description: "Task list for Add Black/White CSS Themes (SDLCSPAC-4)"
 
 ### Tests for User Story 2 ⚠️ Write FIRST — ensure they FAIL before implementing getStoredTheme
 
-- [ ] T017 [P] [US2] Add `getStoredTheme` test cases to tests/theme.test.js: returns `"white"` when localStorage key is absent (first visit); returns `"black"` when stored value is `"black"`; returns `"white"` when stored value is corrupted (e.g. `"dark"`, `"42"`, `""`); use `beforeEach(() => localStorage.clear())` to reset state between tests
+- [X] T017 [P] [US2] Add `getStoredTheme` test cases to tests/theme.test.js: returns `"white"` when localStorage key is absent (first visit); returns `"black"` when stored value is `"black"`; returns `"white"` when stored value is corrupted (e.g. `"dark"`, `"42"`, `""`); use `beforeEach(() => localStorage.clear())` to reset state between tests
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Implement `getStoredTheme()` in frontend/theme.js: read `localStorage.getItem('theme-preference')`, pass through `sanitiseTheme`, and return the result; add to the `window.ThemeManager` browser global and `module.exports` CommonJS export
-- [ ] T019 [US2] Add FOUC prevention inline `<script>` block as the **first child element of `<head>`** in frontend/weather.html (before the `<link>` stylesheet tag): IIFE reads `localStorage.getItem('theme-preference')`, validates against `"black"` / `"white"` allowlist, sets `document.documentElement.setAttribute('data-theme', theme)` — must not call any external function or write to localStorage
-- [ ] T020 [US2] Update the radio button initialization IIFE in the inline `<script>` at the bottom of `<body>` in frontend/weather.html: call `window.ThemeManager.getStoredTheme()` and set `radio.checked = (radio.value === stored)` for each `input[name="theme"]` before attaching the `change` event listener
+- [X] T018 [US2] Implement `getStoredTheme()` in frontend/theme.js: read `localStorage.getItem('theme-preference')`, pass through `sanitiseTheme`, and return the result; add to the `window.ThemeManager` browser global and `module.exports` CommonJS export
+- [X] T019 [US2] Add FOUC prevention inline `<script>` block as the **first child element of `<head>`** in frontend/weather.html (before the `<link>` stylesheet tag): IIFE reads `localStorage.getItem('theme-preference')`, validates against `"black"` / `"white"` allowlist, sets `document.documentElement.setAttribute('data-theme', theme)` — must not call any external function or write to localStorage
+- [X] T020 [US2] Update the radio button initialization IIFE in the inline `<script>` at the bottom of `<body>` in frontend/weather.html: call `window.ThemeManager.getStoredTheme()` and set `radio.checked = (radio.value === stored)` for each `input[name="theme"]` before attaching the `change` event listener
 
 **Checkpoint**: Run `npm test` — all tests must pass including `getStoredTheme` cases. Verify in browser: theme survives page reload; "Black" radio is pre-selected after reload; corrupted localStorage value silently falls back to white.
 
@@ -92,8 +92,8 @@ description: "Task list for Add Black/White CSS Themes (SDLCSPAC-4)"
 
 **Purpose**: Lint compliance, full test suite validation, accessibility confirmation, and quickstart manual verification.
 
-- [ ] T021 [P] Run `npm run lint` on frontend/theme.js and resolve any ESLint errors (must follow the same style as frontend/weather.js — `var` declarations, no arrow functions in event handlers, no trailing commas in older syntax)
-- [ ] T022 Run the full test suite with `npm test` and confirm both tests/weather.test.js (existing) and tests/theme.test.js (new) pass with zero failures or skipped tests
+- [X] T021 [P] Run `npm run lint` on frontend/theme.js and resolve any ESLint errors (must follow the same style as frontend/weather.js — `var` declarations, no arrow functions in event handlers, no trailing commas in older syntax)
+- [X] T022 Run the full test suite with `npm test` and confirm both tests/weather.test.js (existing) and tests/theme.test.js (new) pass with zero failures or skipped tests
 - [ ] T023 [P] Complete the manual verification checklist from quickstart.md in a browser: first-visit white default, Black/White switching, refresh persistence, keyboard-only navigation (Tab + Arrow keys), DevTools localStorage confirmation, corrupted value graceful fallback
 - [ ] T024 [P] Verify WCAG AA accessibility in browser: confirm `.visually-hidden` legend is announced by screen reader; confirm focus ring is visible in both themes (uses `--color-focus-ring`); confirm `--color-muted` is applied only to text rendered at ≥ 18px (secondary/caption text only)
 
