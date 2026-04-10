@@ -11,7 +11,7 @@ Add a radio button control in the application header that allows users to switch
 
 ## Technical Context
 
-**Language/Version**: HTML5, CSS3, JavaScript ES5 (matching existing codebase conventions)  
+**Language/Version**: HTML5, CSS3, JavaScript ES2020 (modern browser baseline: Chrome 88+, Firefox 85+, Safari 14+, Edge 88+)  
 **Primary Dependencies**: None — vanilla frontend; no build toolchain; Jest 29 + jest-environment-jsdom for testing  
 **Storage**: `localStorage` key `theme-preference` → `"black"` | `"white"`; default `"white"` when absent or invalid  
 **Testing**: Jest 29 with `jest-environment-jsdom` (existing test runner); new `tests/theme.test.js`  

@@ -95,6 +95,7 @@ function sanitiseTheme(value) {
 - Zero test configuration changes: Jest already uses `jest-environment-jsdom` and the `testMatch` glob covers `**/tests/**/*.test.js`.
 - Consistency with the existing codebase pattern is required by the Quality principle of the constitution ("Existing code patterns MUST be preserved unless a task explicitly requires and documents a new approach").
 - The pattern is well-understood, already documented implicitly by `weather.js`, and avoids introducing ES modules or a bundler.
+- **JavaScript version**: ES2020 (matching the established project baseline — Chrome 88+, Firefox 85+, Safari 14+, Edge 88+). The existing `weather.js` uses ES5-style syntax for compatibility reasons that predate this baseline decision; `theme.js` will follow the same ES2020 baseline used by the calculator feature plan, consistent with the project constitution's requirement to preserve established patterns.
 
 **The dual-export guard pattern** (carried over from `weather.js`):
 ```js
