@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US Weather Forecast</title>
+  <link rel="stylesheet" href="weather.css" />
+</head>
+<body>
+  <header>
+    <h1>🌤️ US Cities Weather Forecast</h1>
+    <p class="subtitle">Current conditions and forecast for major US cities</p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label for="filter-condition">Filter by condition:</label>
+      <select id="filter-condition">
+        <option value="">All Conditions</option>
+        <option value="Sunny">Sunny</option>
+        <option value="Partly Cloudy">Partly Cloudy</option>
+        <option value="Cloudy">Cloudy</option>
+        <option value="Rainy">Rainy</option>
+        <option value="Stormy">Stormy</option>
+        <option value="Windy">Windy</option>
+      </select>
+
+      <label for="sort-by">Sort by:</label>
+      <select id="sort-by">
+        <option value="city">City</option>
+        <option value="temperature">Temperature</option>
+        <option value="humidity">Humidity</option>
+        <option value="windSpeed">Wind Speed</option>
+      </select>
+    </section>
+
+    <section class="table-container">
+      <table id="weather-table">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>State</th>
+            <th>Condition</th>
+            <th>Temperature (°F)</th>
+            <th>Humidity (%)</th>
+            <th>Wind Speed (mph)</th>
+            <th>Forecast Date</th>
+          </tr>
+        </thead>
+        <tbody id="weather-body">
+        </tbody>
+      </table>
+    </section>
+
+    <p id="no-results" class="no-results hidden">No cities match the selected condition.</p>
+  </main>
+
+  <footer>
+    <p>Data is for demonstration purposes only. Last updated: <span id="last-updated"></span></p>
+  </footer>
+
+  <script src="weather.js"></script>
+  <script>
+    (function () {
+      const filterSelect = document.getElementById('filter-condition');
+      const sortSelect = document.getElementById('sort-by');
+      const tbody = document.getElementById('weather-body');
+      const noResults = document.getElementById('no-results');
+      document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US');
+
+      function render() {
+        const condition = filterSelect.value;
+        const sortKey = sortSelect.value;
+        const data = WeatherApp.getFilteredData(condition, sortKey);
+
+        tbody.innerHTML = '';
+        if (data.length === 0) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+          data.forEach(function (row) {
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td>' + row.city + '</td>' +
+              '<td>' + row.state + '</td>' +
+              '<td><span class="badge badge-' + row.condition.toLowerCase().replace(' ', '-') + '">' + row.condition + '</span></td>' +
+              '<td>' + row.temperature + '</td>' +
+              '<td>' + row.humidity + '</td>' +
+              '<td>' + row.windSpeed + '</td>' +
+              '<td>' + row.forecastDate + '</td>';
+            tbody.appendChild(tr);
+          });
+        }
+      }
+
+      filterSelect.addEventListener('change', render);
+      sortSelect.addEventListener('change', render);
+      render();
+    }());
+  </script>
+</body>
+</html>
