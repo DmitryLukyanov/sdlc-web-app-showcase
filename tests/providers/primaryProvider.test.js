@@ -53,7 +53,7 @@ describe('PrimaryWeatherProvider', () => {
   });
 
   describe('getByCity()', () => {
-    test('finds Seattle case-insensitively... actually finds New York case-insensitively', () => {
+    test('finds New York case-insensitively', () => {
       const result = PrimaryWeatherProvider.getByCity('new york');
       expect(result).not.toBeNull();
       expect(result.city).toBe('New York');
