@@ -1,6 +1,6 @@
 # License: Proprietary. All rights reserved.
 # Automated deployment workflow for GitHub Pages
-# Triggered on every push to main (including PR merges)
+# Triggered on every push to master (including PR merges)
 #
 # Architecture: two-job pipeline
 #   test   — installs dependencies and runs the Jest test suite (gate)
@@ -11,17 +11,17 @@
 #
 # Concurrency: cancel-in-progress: true means that if a second push arrives while a
 # deployment is still in progress, the older run is cancelled and the newer one wins,
-# ensuring GitHub Pages always reflects the most recent commit on main.
+# ensuring GitHub Pages always reflects the most recent commit on master.
 #
 # Note: YAML workflow syntax cannot be unit-tested locally; validation happens via a
-# live push to main or via workflow_dispatch on a feature branch.
+# live push to master or via workflow_dispatch on a feature branch.
 
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main
+      - master
 
 # Minimal workflow-level read permission for checkout.
 # The deploy job overrides this with the additional scopes it needs.
