@@ -1,3 +1,5 @@
+// License: Proprietary. All rights reserved.
+
 /**
  * Weather Forecast Portal - US Cities
  * Mock data and utility functions for the weather forecast table view.

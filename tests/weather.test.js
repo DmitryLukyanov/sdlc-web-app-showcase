@@ -1,3 +1,5 @@
+// License: Proprietary. All rights reserved.
+
 'use strict';
 
 const {

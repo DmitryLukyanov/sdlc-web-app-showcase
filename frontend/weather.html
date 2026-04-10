@@ -1,3 +1,4 @@
+<!-- License: Proprietary. All rights reserved. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -83,7 +84,7 @@
             tr.innerHTML =
               '<td>' + row.city + '</td>' +
               '<td>' + row.state + '</td>' +
-              '<td><span class="badge badge-' + row.condition.toLowerCase().replace(' ', '-') + '">' + row.condition + '</span></td>' +
+              '<td><span class="badge badge-' + row.condition.toLowerCase().replace(/ /g, '-') + '">' + row.condition + '</span></td>' +
               '<td>' + row.temperature + '</td>' +
               '<td>' + row.humidity + '</td>' +
               '<td>' + row.windSpeed + '</td>' +
