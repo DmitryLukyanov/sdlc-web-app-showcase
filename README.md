@@ -18,4 +18,50 @@ The issue is that the provided ticket doesn't have description (so didn't pass v
 The jira has appropriate comment:
 <img width="778" height="551" alt="image" src="https://github.com/user-attachments/assets/357849b5-2ead-4ca1-95bc-fa2ba81c9ce9" />
 
+---
+
+## Deployment
+
+The frontend (`frontend/` directory) is automatically deployed to **GitHub Pages** on every push to the `main` branch, including all merged pull requests. No manual deployment steps are required.
+
+### Live URL
+
+```
+https://<org-or-user>.github.io/sdlc-web-app-showcase/
+```
+
+Replace `<org-or-user>` with the GitHub organisation or user name that owns this repository.
+
+### How it works
+
+The deployment is handled by `.github/workflows/deploy-pages.yml`, which runs a two-job pipeline:
+
+| Job | Steps | Purpose |
+|-----|-------|---------|
+| **test** | `npm ci` → `npm test` | Runs the full Jest suite; blocks deployment if any test fails |
+| **deploy** | configure-pages → upload-artifact → deploy-pages | Packages `frontend/` and publishes it to GitHub Pages via OIDC |
+
+The `deploy` job only starts when `test` passes (`needs: test`). This guarantees that no broken build can ever reach the live site.
+
+### Concurrency
+
+The workflow uses `concurrency: group: pages` with `cancel-in-progress: true`. If two PRs are merged in rapid succession, the older deployment run is automatically cancelled and only the newest commit is deployed. GitHub Pages will always reflect the most recently merged change.
+
+### Viewing pipeline logs
+
+1. Go to the **Actions** tab of this repository.
+2. Click the **Deploy to GitHub Pages** workflow.
+3. Select a run to inspect the `test` and `deploy` job logs.
+
+If the `test` job fails, the failure cause (failed assertion, syntax error, etc.) appears in that job's log and the `deploy` job is skipped entirely.
+
+### One-time repository setup (required before first deploy)
+
+GitHub Pages must be configured to use GitHub Actions as its source before the workflow can publish successfully:
+
+1. Navigate to **Settings → Pages** in this repository.
+2. Under **Build and deployment → Source**, select **GitHub Actions**.
+3. Save the setting.
+
+After this one-time change, every merge to `main` will trigger an automatic deployment. No additional secrets or tokens need to be configured — authentication uses the built-in OIDC token exchange.
 

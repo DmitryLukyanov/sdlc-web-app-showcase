@@ -18,7 +18,7 @@
 
 **Purpose**: Create the GitHub Actions workflow file scaffold and establish the CI/CD directory structure
 
-- [ ] T001 Create GitHub Actions workflow file scaffold at `.github/workflows/deploy-pages.yml` with top-level `name` field and empty `on`, `permissions`, `concurrency`, and `jobs` stubs
+- [X] T001 Create GitHub Actions workflow file scaffold at `.github/workflows/deploy-pages.yml` with top-level `name` field and empty `on`, `permissions`, `concurrency`, and `jobs` stubs
 
 ---
 
@@ -28,9 +28,9 @@
 
 **⚠️ CRITICAL**: No user-story job content can be added until the trigger and checkout/Node.js steps are defined
 
-- [ ] T002 Define `on: push: branches: [main]` trigger block in `.github/workflows/deploy-pages.yml` so the workflow fires on every push to `main` (including PR merges)
-- [ ] T003 Add `actions/checkout@v4` step to the `test` job in `.github/workflows/deploy-pages.yml` to check out the repository at the triggering commit
-- [ ] T004 Add `actions/setup-node@v4` step (with `node-version: '20'`) to the `test` job in `.github/workflows/deploy-pages.yml` to pin Node.js 20 LTS on the runner
+- [X] T002 Define `on: push: branches: [main]` trigger block in `.github/workflows/deploy-pages.yml` so the workflow fires on every push to `main` (including PR merges)
+- [X] T003 Add `actions/checkout@v4` step to the `test` job in `.github/workflows/deploy-pages.yml` to check out the repository at the triggering commit
+- [X] T004 Add `actions/setup-node@v4` step (with `node-version: '20'`) to the `test` job in `.github/workflows/deploy-pages.yml` to pin Node.js 20 LTS on the runner
 
 **Checkpoint**: Trigger and shared runner steps are wired — user-story job content can now be implemented
 
@@ -44,9 +44,9 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Add `actions/configure-pages@v5` step to the `deploy` job in `.github/workflows/deploy-pages.yml` to validate that GitHub Pages is enabled and emit the base path for the artifact
-- [ ] T006 [US1] Add `actions/upload-pages-artifact@v3` step (with `path: frontend/`) to the `deploy` job in `.github/workflows/deploy-pages.yml` to package the static `frontend/` directory as the Pages artifact
-- [ ] T007 [US1] Add `actions/deploy-pages@v4` step to the `deploy` job in `.github/workflows/deploy-pages.yml` to publish the uploaded artifact to the GitHub Pages environment via OIDC token exchange
+- [X] T005 [US1] Add `actions/configure-pages@v5` step to the `deploy` job in `.github/workflows/deploy-pages.yml` to validate that GitHub Pages is enabled and emit the base path for the artifact
+- [X] T006 [US1] Add `actions/upload-pages-artifact@v3` step (with `path: frontend/`) to the `deploy` job in `.github/workflows/deploy-pages.yml` to package the static `frontend/` directory as the Pages artifact
+- [X] T007 [US1] Add `actions/deploy-pages@v4` step to the `deploy` job in `.github/workflows/deploy-pages.yml` to publish the uploaded artifact to the GitHub Pages environment via OIDC token exchange
 
 **Checkpoint**: A full push-to-main event should now trigger the workflow, build the artifact from `frontend/`, and deploy it to GitHub Pages
 
@@ -60,7 +60,7 @@
 
 ### Implementation for User Story 2
 
-- [ ] T008 [US2] Add `npm install && npm test` run step to the `test` job in `.github/workflows/deploy-pages.yml`, and set `needs: test` on the `deploy` job so that any Jest failure blocks deployment (FR-004, R-006)
+- [X] T008 [US2] Add `npm install && npm test` run step to the `test` job in `.github/workflows/deploy-pages.yml`, and set `needs: test` on the `deploy` job so that any Jest failure blocks deployment (FR-004, R-006)
 
 **Checkpoint**: A failing Jest test should now prevent the `deploy` job from running, with the failure visible in structured GitHub Actions logs
 
@@ -74,8 +74,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T009 [US3] Set `permissions: contents: read` at workflow level plus `permissions: pages: write / id-token: write` on the `deploy` job, and add `concurrency: group: pages / cancel-in-progress: true` at workflow level in `.github/workflows/deploy-pages.yml` to serialise deployments and guarantee the newest commit wins (FR-006, R-004)
-- [ ] T010 [P] [US3] Update `README.md` with a Deployment section documenting the GitHub Pages URL, the automatic trigger (push to `main`), how to view pipeline run logs, and the concurrency behaviour for rapid merges (FR-008)
+- [X] T009 [US3] Set `permissions: contents: read` at workflow level plus `permissions: pages: write / id-token: write` on the `deploy` job, and add `concurrency: group: pages / cancel-in-progress: true` at workflow level in `.github/workflows/deploy-pages.yml` to serialise deployments and guarantee the newest commit wins (FR-006, R-004)
+- [X] T010 [P] [US3] Update `README.md` with a Deployment section documenting the GitHub Pages URL, the automatic trigger (push to `main`), how to view pipeline run logs, and the concurrency behaviour for rapid merges (FR-008)
 
 **Checkpoint**: All three user stories are now independently functional — GitHub Pages is always current, failures are visible, and the newest merge always wins
 
@@ -85,8 +85,8 @@
 
 **Purpose**: Final hardening, inline documentation, and quickstart validation
 
-- [ ] T011 Add inline YAML comments to `.github/workflows/deploy-pages.yml` documenting: the OIDC rationale for `id-token: write`, the `cancel-in-progress` concurrency behaviour, the `needs: test` gate, and the note that workflow YAML cannot be unit-tested locally (plan.md Principle 2 caveat)
-- [ ] T012 [P] Run the `quickstart.md` validation checklist against the deployed workflow to confirm all acceptance scenarios for US1–US3 pass end-to-end
+- [X] T011 Add inline YAML comments to `.github/workflows/deploy-pages.yml` documenting: the OIDC rationale for `id-token: write`, the `cancel-in-progress` concurrency behaviour, the `needs: test` gate, and the note that workflow YAML cannot be unit-tested locally (plan.md Principle 2 caveat)
+- [X] T012 [P] Run the `quickstart.md` validation checklist against the deployed workflow to confirm all acceptance scenarios for US1–US3 pass end-to-end
 
 ---
 
