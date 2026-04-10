@@ -156,12 +156,41 @@ function getConditionSummary() {
   }, {});
 }
 
+/**
+ * Returns weather data for a specific city from the named provider.
+ * Delegates to WeatherProviderRegistry.getWeatherByCity.
+ *
+ * @param {string} city - City name (alias-aware, case-insensitive per provider).
+ * @param {string} providerId - Provider id (e.g. 'primary', 'mock').
+ * @returns {Object|null} WeatherRecord or null if the city is unsupported by the provider.
+ */
+function getWeatherByCity(city, providerId) {
+  var registry = (typeof module !== 'undefined' && module.exports)
+    ? require('./providerRegistry')
+    : window.WeatherProviderRegistry;
+  return registry.getWeatherByCity(city, providerId);
+}
+
+/**
+ * Returns all weather records from the named provider.
+ * Delegates to WeatherProviderRegistry.getAllWeatherData.
+ *
+ * @param {string} providerId - Provider id (e.g. 'primary', 'mock').
+ * @returns {Array<Object>} Array of WeatherRecord objects.
+ */
+function getAllFromProvider(providerId) {
+  var registry = (typeof module !== 'undefined' && module.exports)
+    ? require('./providerRegistry')
+    : window.WeatherProviderRegistry;
+  return registry.getAllWeatherData(providerId);
+}
+
 // Browser global exposure
 if (typeof window !== 'undefined') {
-  window.WeatherApp = { getAllWeatherData, filterByCondition, sortData, getFilteredData, getConditionSummary };
+  window.WeatherApp = { getAllWeatherData, filterByCondition, sortData, getFilteredData, getConditionSummary, getWeatherByCity, getAllFromProvider };
 }
 
 // CommonJS export for Jest
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { getAllWeatherData, filterByCondition, sortData, getFilteredData, getConditionSummary, weatherData };
+  module.exports = { getAllWeatherData, filterByCondition, sortData, getFilteredData, getConditionSummary, weatherData, getWeatherByCity, getAllFromProvider };
 }

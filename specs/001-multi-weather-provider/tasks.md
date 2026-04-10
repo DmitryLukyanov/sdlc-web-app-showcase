@@ -18,7 +18,7 @@
 
 **Purpose**: Orient implementation — no new dependencies or build steps are required. The existing Jest 29 + jsdom environment handles all test execution via `npm test`.
 
-- [ ] T001 Review `frontend/weather.js` exports and `tests/weather.test.js` patterns to confirm the WeatherRecord shape (`city`, `state`, `temperature`, `humidity`, `windSpeed`, `condition`, `forecastDate`) and existing CommonJS + `window.WeatherApp` dual-export convention before adding new modules
+- [X] T001 Review `frontend/weather.js` exports and `tests/weather.test.js` patterns to confirm the WeatherRecord shape (`city`, `state`, `temperature`, `humidity`, `windSpeed`, `condition`, `forecastDate`) and existing CommonJS + `window.WeatherApp` dual-export convention before adding new modules
 
 ---
 
@@ -28,9 +28,9 @@
 
 **⚠️ CRITICAL**: T005 (mockProvider.js) is also required before T003's tests can execute — T002 and T005 may be coded in parallel, but all three files must exist before running `npm test`.
 
-- [ ] T002 [P] Create `frontend/providers/primaryProvider.js` implementing the WeatherProvider interface (`id: 'primary'`, `getByCity(cityName)` with case-insensitive lookup returning `WeatherRecord | null`, `getAll()` returning a shallow copy of all 10 records); export via `module.exports` and attach to `window.PrimaryWeatherProvider`; inline the raw `weatherData` array — do **not** import from `weather.js` to avoid circular dependency
-- [ ] T003 Create `frontend/providerRegistry.js` implementing `WeatherProviderRegistry` with an internal `Map`; expose `register(provider)` (throws `Error('Provider already registered: <id>')` on duplicate), `getProvider(id)` (throws `Error('Unknown weather provider: <id>')` on miss), `getAllWeatherData(providerId)`, and `getWeatherByCity(city, providerId)`; auto-register `PrimaryWeatherProvider` and `MockWeatherProvider` at module load using `require` in Node / `window.*` in browser; export via `module.exports` and attach to `window.WeatherProviderRegistry`
-- [ ] T004 [P] Create `tests/providers/primaryProvider.test.js` with unit tests verifying: `id === 'primary'`; `getAll()` returns exactly 10 records; `getAll()` returns a copy (mutation does not affect internal state); `getByCity('seattle')` matches case-insensitively; `getByCity('NonExistentCity')` returns `null`; each record has all 7 required fields
+- [X] T002 [P] Create `frontend/providers/primaryProvider.js` implementing the WeatherProvider interface (`id: 'primary'`, `getByCity(cityName)` with case-insensitive lookup returning `WeatherRecord | null`, `getAll()` returning a shallow copy of all 10 records); export via `module.exports` and attach to `window.PrimaryWeatherProvider`; inline the raw `weatherData` array — do **not** import from `weather.js` to avoid circular dependency
+- [X] T003 Create `frontend/providerRegistry.js` implementing `WeatherProviderRegistry` with an internal `Map`; expose `register(provider)` (throws `Error('Provider already registered: <id>')` on duplicate), `getProvider(id)` (throws `Error('Unknown weather provider: <id>')` on miss), `getAllWeatherData(providerId)`, and `getWeatherByCity(city, providerId)`; auto-register `PrimaryWeatherProvider` and `MockWeatherProvider` at module load using `require` in Node / `window.*` in browser; export via `module.exports` and attach to `window.WeatherProviderRegistry`
+- [X] T004 [P] Create `tests/providers/primaryProvider.test.js` with unit tests verifying: `id === 'primary'`; `getAll()` returns exactly 10 records; `getAll()` returns a copy (mutation does not affect internal state); `getByCity('seattle')` matches case-insensitively; `getByCity('NonExistentCity')` returns `null`; each record has all 7 required fields
 
 **Checkpoint**: `PrimaryWeatherProvider` interface defined and green; registry skeleton ready — user story work can begin.
 
@@ -46,14 +46,14 @@
 
 > **Write tests FIRST — ensure they FAIL before implementation of the files they cover**
 
-- [ ] T005 [P] [US1] Create `tests/providers/mockProvider.test.js` with unit tests verifying: `id === 'mock'`; `getByCity('New York')` returns `condition: 'Sunny'`; `getByCity('LA')` resolves alias and returns `condition: 'Snow'`; `getByCity('Washington')` resolves alias and returns `condition: 'Windy'`; `getAll()` returns exactly 3 records; `getAll()` returns a copy; each record has all 7 required `WeatherRecord` fields with correct types
-- [ ] T006 [P] [US1] Create `tests/providers/providerRegistry.test.js` with unit tests verifying: both `'primary'` and `'mock'` providers are registered at load time; `getProvider('primary')` returns a provider with `id === 'primary'`; `getProvider('mock')` returns a provider with `id === 'mock'`; `getWeatherByCity('New York', 'mock')` returns `condition: 'Sunny'`; `getAllWeatherData('primary')` returns 10 records; `getAllWeatherData('mock')` returns 3 records
+- [X] T005 [P] [US1] Create `tests/providers/mockProvider.test.js` with unit tests verifying: `id === 'mock'`; `getByCity('New York')` returns `condition: 'Sunny'`; `getByCity('LA')` resolves alias and returns `condition: 'Snow'`; `getByCity('Washington')` resolves alias and returns `condition: 'Windy'`; `getAll()` returns exactly 3 records; `getAll()` returns a copy; each record has all 7 required `WeatherRecord` fields with correct types
+- [X] T006 [P] [US1] Create `tests/providers/providerRegistry.test.js` with unit tests verifying: both `'primary'` and `'mock'` providers are registered at load time; `getProvider('primary')` returns a provider with `id === 'primary'`; `getProvider('mock')` returns a provider with `id === 'mock'`; `getWeatherByCity('New York', 'mock')` returns `condition: 'Sunny'`; `getAllWeatherData('primary')` returns 10 records; `getAllWeatherData('mock')` returns 3 records
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Create `frontend/providers/mockProvider.js` with `id: 'mock'`, an internal `mockData` array (New York → Sunny, Los Angeles → Snow, Washington D.C. → Windy — use placeholder values for `state`, `temperature`, `humidity`, `windSpeed`, `forecastDate` as specified in `data-model.md`), and an `aliasMap` with lowercase keys (`la`, `los angeles`, `washington`, `washington d.c.`, `washington dc`, `washington d.c.`, `new york`, `new york city`, `nyc`); implement `getByCity(cityName)` with `trim()` + `toLowerCase()` + alias resolution + `null` for unrecognised cities; implement `getAll()` returning `mockData.slice()`; export via `module.exports` and attach to `window.MockWeatherProvider`
-- [ ] T008 [US1] Update `frontend/weather.js` to add two new methods at the end of both the CommonJS export block and the `window.WeatherApp` assignment: `getWeatherByCity(city, providerId)` delegating to `WeatherProviderRegistry.getWeatherByCity(city, providerId)` and `getAllFromProvider(providerId)` delegating to `WeatherProviderRegistry.getAllWeatherData(providerId)`; in Node context use `require('./providerRegistry')`; in browser context read `window.WeatherProviderRegistry`; **do not modify or remove any existing export**
-- [ ] T009 [US1] Update `frontend/weather.html` to insert three `<script>` tags immediately before the existing `<script src="weather.js">` tag in this exact order: `<script src="providers/primaryProvider.js"></script>`, `<script src="providers/mockProvider.js"></script>`, `<script src="providerRegistry.js"></script>`; add an inline comment explaining the load-order dependency (providers → registry → weather.js)
+- [X] T007 [P] [US1] Create `frontend/providers/mockProvider.js` with `id: 'mock'`, an internal `mockData` array (New York → Sunny, Los Angeles → Snow, Washington D.C. → Windy — use placeholder values for `state`, `temperature`, `humidity`, `windSpeed`, `forecastDate` as specified in `data-model.md`), and an `aliasMap` with lowercase keys (`la`, `los angeles`, `washington`, `washington d.c.`, `washington dc`, `washington d.c.`, `new york`, `new york city`, `nyc`); implement `getByCity(cityName)` with `trim()` + `toLowerCase()` + alias resolution + `null` for unrecognised cities; implement `getAll()` returning `mockData.slice()`; export via `module.exports` and attach to `window.MockWeatherProvider`
+- [X] T008 [US1] Update `frontend/weather.js` to add two new methods at the end of both the CommonJS export block and the `window.WeatherApp` assignment: `getWeatherByCity(city, providerId)` delegating to `WeatherProviderRegistry.getWeatherByCity(city, providerId)` and `getAllFromProvider(providerId)` delegating to `WeatherProviderRegistry.getAllWeatherData(providerId)`; in Node context use `require('./providerRegistry')`; in browser context read `window.WeatherProviderRegistry`; **do not modify or remove any existing export**
+- [X] T009 [US1] Update `frontend/weather.html` to insert three `<script>` tags immediately before the existing `<script src="weather.js">` tag in this exact order: `<script src="providers/primaryProvider.js"></script>`, `<script src="providers/mockProvider.js"></script>`, `<script src="providerRegistry.js"></script>`; add an inline comment explaining the load-order dependency (providers → registry → weather.js)
 
 **Checkpoint**: User Story 1 is fully functional. `getWeatherByCity('New York', 'mock')` returns `Sunny`; `getWeatherByCity('New York', 'primary')` returns the existing primary-provider value; all T005 and T006 tests pass.
 
@@ -67,11 +67,11 @@
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] Add test cases to `tests/providers/mockProvider.test.js` for graceful degradation: `getByCity('Chicago')` returns `null`; `getByCity('')` returns `null`; `getByCity('  ')` (whitespace-only) returns `null`; none of these calls throw; the returned value is strictly `null` (not `undefined`, not `{}`, not a primary-provider record)
+- [X] T010 [P] [US2] Add test cases to `tests/providers/mockProvider.test.js` for graceful degradation: `getByCity('Chicago')` returns `null`; `getByCity('')` returns `null`; `getByCity('  ')` (whitespace-only) returns `null`; none of these calls throw; the returned value is strictly `null` (not `undefined`, not `{}`, not a primary-provider record)
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Verify `frontend/providers/mockProvider.js` covers all required alias variants — run `npm test` and confirm T010 tests pass; if any alias (`la`, `los angeles`, `washington dc`, `washington d.c.`, `nyc`, `new york city`) fails, update the `aliasMap` in `frontend/providers/mockProvider.js` accordingly; confirm that any city not present in the alias map or `mockData` resolves to `null` with no exception
+- [X] T011 [US2] Verify `frontend/providers/mockProvider.js` covers all required alias variants — run `npm test` and confirm T010 tests pass; if any alias (`la`, `los angeles`, `washington dc`, `washington d.c.`, `nyc`, `new york city`) fails, update the `aliasMap` in `frontend/providers/mockProvider.js` accordingly; confirm that any city not present in the alias map or `mockData` resolves to `null` with no exception
 
 **Checkpoint**: User Stories 1 and 2 are both independently functional. Mock provider returns correct conditions for known cities and `null` for all others with zero exceptions.
 
@@ -85,11 +85,11 @@
 
 ### Tests for User Story 3
 
-- [ ] T012 [P] [US3] Add test cases to `tests/providers/providerRegistry.test.js` for extensibility: define an inline `thirdProvider` object (`id: 'third'`, `getByCity`, `getAll`) directly in the test; call `register(thirdProvider)`; verify `getProvider('third')` returns `thirdProvider`; verify `getAllWeatherData('third')` delegates correctly; verify registering a duplicate `id` throws `Error('Provider already registered: third')`; verify that adding this provider does not change `getAllWeatherData('primary')` or `getAllWeatherData('mock')` results
+- [X] T012 [P] [US3] Add test cases to `tests/providers/providerRegistry.test.js` for extensibility: define an inline `thirdProvider` object (`id: 'third'`, `getByCity`, `getAll`) directly in the test; call `register(thirdProvider)`; verify `getProvider('third')` returns `thirdProvider`; verify `getAllWeatherData('third')` delegates correctly; verify registering a duplicate `id` throws `Error('Provider already registered: third')`; verify that adding this provider does not change `getAllWeatherData('primary')` or `getAllWeatherData('mock')` results
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Verify `frontend/providerRegistry.js` enforces both error conditions — run `npm test` and confirm T012 tests pass; confirm `register()` throws the exact message `'Provider already registered: <id>'` and `getProvider()` throws `'Unknown weather provider: <id>'` as specified in `contracts/weather-provider-api.md`; no changes to existing provider files should be needed
+- [X] T013 [US3] Verify `frontend/providerRegistry.js` enforces both error conditions — run `npm test` and confirm T012 tests pass; confirm `register()` throws the exact message `'Provider already registered: <id>'` and `getProvider()` throws `'Unknown weather provider: <id>'` as specified in `contracts/weather-provider-api.md`; no changes to existing provider files should be needed
 
 **Checkpoint**: All three user stories are independently functional. A third provider can be added in under 30 minutes following the established pattern (SC-005).
 
@@ -99,9 +99,9 @@
 
 **Purpose**: Confirm zero regression, add inline documentation, and satisfy success criteria SC-003 and SC-005.
 
-- [ ] T014 Run `npm test` from the repository root and confirm: all tests in `tests/weather.test.js` pass without modification (SC-003 zero regression); all new tests in `tests/providers/primaryProvider.test.js`, `tests/providers/mockProvider.test.js`, and `tests/providers/providerRegistry.test.js` pass; total passing test count is reported
-- [ ] T015 [P] Add JSDoc block comments to `frontend/providers/mockProvider.js` documenting: the `aliasMap` keys and their canonical targets; the `mockData` structure and which fields are spec-required vs placeholder; a `@example` showing how to add a fourth supported city for future developers (SC-005 — 30-minute onboarding target)
-- [ ] T016 [P] Add JSDoc block comment to `frontend/providers/primaryProvider.js` documenting: the provider `id`, the source of the wrapped data, and the reason the `weatherData` array is inlined rather than imported from `weather.js` (circular-dependency avoidance)
+- [X] T014 Run `npm test` from the repository root and confirm: all tests in `tests/weather.test.js` pass without modification (SC-003 zero regression); all new tests in `tests/providers/primaryProvider.test.js`, `tests/providers/mockProvider.test.js`, and `tests/providers/providerRegistry.test.js` pass; total passing test count is reported
+- [X] T015 [P] Add JSDoc block comments to `frontend/providers/mockProvider.js` documenting: the `aliasMap` keys and their canonical targets; the `mockData` structure and which fields are spec-required vs placeholder; a `@example` showing how to add a fourth supported city for future developers (SC-005 — 30-minute onboarding target)
+- [X] T016 [P] Add JSDoc block comment to `frontend/providers/primaryProvider.js` documenting: the provider `id`, the source of the wrapped data, and the reason the `weatherData` array is inlined rather than imported from `weather.js` (circular-dependency avoidance)
 
 ---
 
