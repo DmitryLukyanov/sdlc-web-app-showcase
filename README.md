@@ -64,4 +64,9 @@ GitHub Pages must be configured to use GitHub Actions as its source before the w
 3. Save the setting.
 
 After this one-time change, every merge to `main` will trigger an automatic deployment. No additional secrets or tokens need to be configured — authentication uses the built-in OIDC token exchange.
+# Jira board is fixed
+
+## Issues and PRs
+<img width="1510" height="445" alt="image" src="https://github.com/user-attachments/assets/59399a7c-b762-4ffd-9f3f-db8e5c272507" />
+
 
