@@ -3,7 +3,7 @@
 **Feature Branch**: `002-multi-provider-display`  
 **Created**: 2025-07-23  
 **Status**: Draft  
-**Input**: User description: "The shown data on the main screen is taken only from single whether provider"
+**Input**: User description: "The shown data on the main screen is taken only from single weather provider"
 
 ## User Scenarios & Testing *(mandatory)*
 
