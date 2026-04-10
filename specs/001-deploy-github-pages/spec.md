@@ -5,6 +5,16 @@
 **Status**: Draft  
 **Input**: User description: "Add deploy application to GitHub Pages — Deployment should happen automatically after each merged PR"
 
+## Clarifications
+
+### Session 2026-04-10
+
+- Q: What branch should trigger the deployment process? → A: Only the main branch
+- Q: Are there any specific build steps or configurations required before deployment? → A: The project uses Node.js with Jest; the build step should install dependencies and copy static files (HTML/CSS/JS from the `frontend/` directory)
+- Q: Should the deployment overwrite the existing GitHub Pages site, or should it handle versioning? → A: Overwrite (no versioning needed)
+- Q: Are there any specific permissions or tokens required for GitHub Pages deployment? → A: Use GITHUB_TOKEN (built-in) with pages write permission
+- Q: Should the deployment process include any notifications upon success or failure? → A: No notifications required
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Automatic Deployment on Merge (Priority: P1)
@@ -56,28 +66,29 @@ A stakeholder visits the GitHub Pages URL at any time and sees the most recent s
 
 ### Edge Cases
 
-- What happens when two pull requests are merged in rapid succession? The pipeline must handle concurrent or queued runs without deploying a stale or partial build.
+- What happens when two pull requests are merged in rapid succession? Each pipeline run deploys the full artifact for its respective commit; because deployments overwrite the GitHub Pages site, the run that completes last wins. Workflow concurrency controls MUST be used to serialise or cancel superseded runs so that the newest merged commit's artifact is always the final deployed state.
 - What happens when the build step produces no output or an empty artifact? The pipeline must not deploy an empty or corrupt build to GitHub Pages.
 - What happens when the pipeline lacks the necessary permissions to push to GitHub Pages? The failure must surface in the logs without exposing any credentials.
-- What happens when a deployment is triggered by a non-merge event (e.g., a direct push to main)? The pipeline behavior must be consistent: either deploy or explicitly skip, not silently fail.
+- What happens when a deployment is triggered by a non-merge event (e.g., a direct push to main)? The pipeline triggers on any push to the main branch (merges appear as pushes); this is consistent and intentional — every push to main initiates a deployment.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST automatically trigger a build and deployment pipeline whenever a pull request is merged into the main branch
-- **FR-002**: The pipeline MUST build the application as a production-ready artifact before deploying it
-- **FR-003**: The pipeline MUST deploy the built artifact to GitHub Pages upon successful build completion
+- **FR-001**: The system MUST automatically trigger a build and deployment pipeline whenever a commit is pushed to the main branch (including pull request merges, which GitHub surfaces as pushes to main)
+- **FR-002**: The pipeline MUST build the application using Node.js: install all npm dependencies (`npm install`) and copy the static output files (HTML, CSS, and JavaScript) from the `frontend/` directory into the deployment artifact — no compilation or bundling step is required
+- **FR-003**: The pipeline MUST deploy the built artifact to GitHub Pages upon successful build completion, overwriting the existing GitHub Pages site with the new artifact (no versioned history of previous deployments is retained)
 - **FR-004**: The pipeline MUST NOT deploy the application if the build step fails or produces an invalid artifact
 - **FR-005**: The pipeline MUST generate and retain structured deployment logs for each run, accessible to the development team for debugging
 - **FR-006**: The pipeline MUST NOT expose sensitive information — such as access tokens, API keys, or secrets — in logs, deployment artifacts, or public-facing outputs
 - **FR-007**: The pipeline MUST be triggered exclusively by the GitHub Actions automation system, requiring no manual steps from any team member
 - **FR-008**: Stakeholders and developers MUST be able to access the deployed application at a stable, predictable GitHub Pages URL following any successful deployment
+- **FR-009**: The pipeline MUST NOT send external notifications (email, Slack, or any other channel) upon success or failure; the GitHub Actions run status indicator is the sole feedback mechanism
 
 ### Key Entities
 
 - **Pipeline Run**: A single execution of the automated workflow, associated with a specific merge event. Contains status, triggered-by commit, start/end timestamps, and log output.
-- **Build Artifact**: The production-ready, deployable output of the build step. Must be valid and non-empty before being handed off to the deployment step.
+- **Build Artifact**: The production-ready, deployable output of the build step — the HTML, CSS, and JavaScript files copied from the `frontend/` directory after `npm install` completes. Must be valid and non-empty before being handed off to the deployment step.
 - **Deployment**: The act of publishing a build artifact to GitHub Pages. Associated with a pipeline run and a specific commit SHA from the main branch.
 - **GitHub Pages Environment**: The hosted environment where the application is served. Must reflect the artifact from the most recent successful deployment.
 
@@ -94,9 +105,9 @@ A stakeholder visits the GitHub Pages URL at any time and sees the most recent s
 ## Assumptions
 
 - The repository is hosted on GitHub and GitHub Actions is available and enabled for the repository
-- The application has an existing build process that produces a deployable artifact (e.g., static files) suitable for GitHub Pages hosting
-- The main branch is the single source of truth for production deployments; only merges into main trigger a deployment
+- The application's deployable artifact consists of the static HTML, CSS, and JavaScript files present in the `frontend/` directory; the build step runs `npm install` using the Node.js runtime (no transpilation or bundling is required)
+- The main branch is the single source of truth for production deployments; every push to main (including PR merges) triggers a deployment
 - GitHub Pages is already enabled (or can be enabled) for the repository under the organization's plan
-- Secrets required for deployment (e.g., GitHub tokens with Pages write permissions) will be stored as encrypted repository secrets, not hardcoded anywhere
+- Deployment authentication uses the built-in `GITHUB_TOKEN` provided by GitHub Actions, configured with `pages: write` and `id-token: write` permissions in the workflow; no additional stored repository secrets are required for the deployment step
 - The scope of this feature is exclusively the CI/CD pipeline configuration; no changes to application source code are included
 - Team members have sufficient GitHub repository permissions to view pipeline logs and the GitHub Pages settings
