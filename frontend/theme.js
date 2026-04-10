@@ -74,27 +74,6 @@ function toggleTheme(theme) {
   applyTheme(sanitiseTheme(theme));
 }
 
-/**
- * Initialises the theme on page load:
- *   1. Reads the stored preference (or falls back to 'white').
- *   2. Applies it via applyTheme (sets data-theme + writes localStorage).
- *   3. Pre-selects the matching radio button in the header.
- *
- * Must be called after the DOM is ready (after <body> has been parsed).
- *
- * @returns {void}
- */
-function initTheme() {
-  var stored = getStoredTheme();
-  applyTheme(stored);
-
-  var radios = document.querySelectorAll('input[name="theme"]');
-  var i;
-  for (i = 0; i < radios.length; i++) {
-    radios[i].checked = (radios[i].value === stored);
-  }
-}
-
 // Browser global exposure — guarded so Node.js/Jest environments don't throw
 if (typeof window !== 'undefined') {
   window.ThemeManager = {
@@ -102,7 +81,6 @@ if (typeof window !== 'undefined') {
     applyTheme: applyTheme,
     toggleTheme: toggleTheme,
     getStoredTheme: getStoredTheme,
-    initTheme: initTheme,
   };
 }
 
@@ -113,6 +91,5 @@ if (typeof module !== 'undefined' && module.exports) {
     applyTheme: applyTheme,
     toggleTheme: toggleTheme,
     getStoredTheme: getStoredTheme,
-    initTheme: initTheme,
   };
 }
