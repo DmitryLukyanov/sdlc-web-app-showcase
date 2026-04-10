@@ -5,6 +5,20 @@
 **Status**: Draft  
 **Input**: User description: "The shown data on the main screen is taken only from single weather provider"
 
+## Clarifications
+
+### Session 2026-04-10
+
+- Q: Is multi-select allowed in the provider filter? → A: Yes, multi-select is allowed; users may select one or more providers simultaneously.
+- Q: What is the default filter state on page load? → A: All providers shown by default (no filter pre-applied).
+- Q: Are UI mockups or wireframes required? → A: No specific UI mockups required; follow existing application UI patterns.
+- Q: Does the provider filter selection persist across browser sessions or page reloads? → A: No; filter resets to "All providers" on each page load.
+- Q: Are there hard performance limits on the number of providers? → A: No hard performance limits; follows existing application performance expectations.
+- Q: Where should multi-provider data aggregation occur? → A: Follow existing pattern — extend `WeatherProviderRegistry` with a method to expose all registered providers (e.g. `listProviders()`); aggregate in the client layer (`weather.js`) by iterating over all registered provider IDs, matching the Strategy pattern already in place.
+- Q: What UI control implements the provider filter? → A: Multi-select checkboxes — one checkbox per registered provider (plus an "All" toggle), replacing a single-select dropdown for this control only.
+- Q: How should the UI handle a provider that fails or returns an error at load time? → A: Display partial data from all successful providers and show a visible, non-blocking warning indicator identifying each failed provider by name; no full-page error state.
+- Q: How should a provider be labelled in the UI (filter checkboxes and per-record attribution)? → A: Use the provider's `id` string as returned by the data model (e.g. `"primary"`, `"mock"`) — no additional display-name mapping is required.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View Weather Data from All Providers (Priority: P1)
@@ -49,7 +63,7 @@ As an end-user, I want to filter the displayed weather data by a specific provid
 
 **Acceptance Scenarios**:
 
-1. **Given** weather data from multiple providers is displayed, **When** a user selects a specific provider from the provider filter, **Then** only records from that provider are shown and all others are hidden.
+1. **Given** weather data from multiple providers is displayed, **When** a user selects one or more specific providers from the provider filter, **Then** only records from the selected provider(s) are shown and all others are hidden.
 2. **Given** a provider filter is active, **When** a user clears or resets the filter, **Then** records from all providers are shown again.
 3. **Given** the provider filter control is visible, **When** a user inspects its options, **Then** every registered provider is listed as a selectable option.
 4. **Given** a provider filter is active, **When** another filter (e.g. weather condition) is also applied, **Then** both filters operate together and only records matching both criteria are displayed.
@@ -61,28 +75,29 @@ As an end-user, I want to filter the displayed weather data by a specific provid
 - What happens when a provider returns no records (empty dataset)? The table must not error — it should simply show no rows for that provider and still display rows from other providers.
 - What happens when only one provider is registered? The main screen displays its data normally; the provider filter control still appears but lists only the single provider.
 - What happens when a new provider is registered at runtime? The combined dataset and the provider filter options must reflect the addition without requiring a page reload (if the architecture supports dynamic registration).
-- How does the system handle a provider that fails or is unavailable? The feature should degrade gracefully — records from the failed provider are omitted and the remaining providers' data is still displayed; the user receives a non-blocking indication that one source is unavailable.
+- How does the system handle a provider that fails or is unavailable? The feature degrades gracefully — records from the failed provider are omitted and the remaining providers' data is still displayed; a visible non-blocking warning indicator (e.g. banner or inline badge) identifies each failed provider by its `id` without blocking the user from reading available data.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The main screen MUST display weather records from all registered providers simultaneously.
+- **FR-001**: The main screen MUST display weather records from all registered providers simultaneously. Aggregation MUST follow the existing codebase pattern: `WeatherProviderRegistry` exposes a method (e.g. `listProviders()`) that returns all registered provider IDs; the client layer (`weather.js`) iterates over them and concatenates each provider's dataset into a single combined array, consistent with the existing Strategy pattern.
 - **FR-002**: Records from different providers MUST NOT be merged, averaged, or de-duplicated — each provider's record for a city MUST appear as a separate row.
-- **FR-003**: Each weather record displayed on the main screen MUST be attributed to its originating provider (e.g. a provider name label visible in or alongside the record).
-- **FR-004**: The main screen MUST include a provider filter control that allows users to show records from one specific provider or from all providers.
+- **FR-003**: Each weather record displayed on the main screen MUST be attributed to its originating provider using the provider's `id` string as returned by the `WeatherProviderRegistry` (e.g. `"primary"`, `"mock"`). No additional display-name mapping is required.
+- **FR-004**: The main screen MUST include a provider filter control implemented as **multi-select checkboxes** — one checkbox per registered provider (labelled with `provider.id`) plus an "All providers" toggle — that controls which records are visible. The default state on page load MUST show records from all providers (all checkboxes checked / "All providers" active).
 - **FR-005**: The provider filter control MUST list all currently registered providers as selectable options.
-- **FR-006**: When a provider filter is applied, only records from the selected provider MUST be visible; all other records MUST be hidden.
+- **FR-006**: When a provider filter is applied, only records from the selected provider(s) MUST be visible; records from all unselected providers MUST be hidden.
 - **FR-007**: When the provider filter is cleared or set to "All", records from every registered provider MUST be shown.
+- **FR-010b**: The provider filter selection MUST NOT persist across browser sessions or page reloads; each page load resets the filter to the default "All providers" state.
 - **FR-008**: The provider filter MUST be combinable with any existing filters (e.g. weather condition filter) so that both criteria are applied simultaneously.
-- **FR-009**: If a provider returns no data or is unavailable, the main screen MUST continue to display records from all other providers without error.
+- **FR-009**: If a provider returns no data or is unavailable at page load time, the main screen MUST continue to display records from all other providers without error AND MUST render a visible, non-blocking warning indicator (e.g. a banner or inline badge) that identifies each failed provider by its `id`.
 - **FR-010**: The combined dataset shown on the main screen MUST reflect the current state of all registered providers at page load time.
 
 ### Key Entities
 
 - **WeatherRecord**: A single weather observation for a city, sourced from one provider. Key attributes: city, state, temperature, humidity, windSpeed, condition, forecastDate, and providerName.
-- **Provider**: A named source of weather records (e.g. "primary", "mock"). Identified by a unique provider identifier and a human-readable display name used in the UI.
-- **ProviderFilter**: A UI control that holds the currently selected provider identifier (or "all") and drives which records are visible on the main screen.
+- **Provider**: A named source of weather records. Identified by a unique `id` string (e.g. `"primary"`, `"mock"`) exposed by the `WeatherProviderRegistry`. The `id` is used directly as the display label in the filter UI and record attribution column — no separate display-name mapping is required.
+- **ProviderFilter**: A UI control rendered as multi-select checkboxes (one per registered provider, labelled with `provider.id`, plus an "All providers" toggle). Holds the set of currently selected provider IDs and drives which records are visible on the main screen. Resets to "all selected" on each page load.
 
 ## Success Criteria *(mandatory)*
 
@@ -93,12 +108,12 @@ As an end-user, I want to filter the displayed weather data by a specific provid
 - **SC-003**: Selecting a provider filter reduces the visible record count to exactly the number of records belonging to that provider.
 - **SC-004**: The provider filter control lists all registered providers — verified by comparing the list of options against the set of registered provider IDs.
 - **SC-005**: Clearing the provider filter restores the full multi-provider dataset with no records missing.
-- **SC-006**: When one provider is unavailable, the remaining providers' records remain fully visible and the application does not display an unrecoverable error state.
+- **SC-006**: When one provider is unavailable, the remaining providers' records remain fully visible, a non-blocking warning indicator identifying the failed provider by `id` is displayed, and the application does not enter an unrecoverable error state.
 
 ## Assumptions
 
 - The application already has a provider registry mechanism in place that holds two or more providers; this feature consumes that registry to populate the combined dataset and filter options.
-- Provider names or identifiers are human-readable enough to be presented directly in the filter UI without additional mapping; if a display name is needed it is considered an implementation-level detail.
+- The provider `id` string (e.g. `"primary"`, `"mock"`) as returned by `WeatherProviderRegistry` is used directly as the UI display label for filter checkboxes and record attribution. No separate human-readable display-name mapping is needed.
 - The existing weather condition filter remains unchanged; provider filtering is additive to the current filtering capability.
 - Performance requirements are not changed by this feature — no specific latency target applies beyond the existing expected behaviour of the application.
 - The main screen refers to the primary weather data table view (`weather.html`) visible to end-users.
