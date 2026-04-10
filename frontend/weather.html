@@ -5,12 +5,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>US Weather Forecast</title>
+  <!-- FOUC prevention: read stored theme and apply data-theme BEFORE the
+       stylesheet is parsed so CSS variables resolve correctly on first paint.
+       This script is intentionally self-contained — it must NOT reference
+       theme.js or window.ThemeManager (the module is not yet loaded here).
+       It does NOT write a default back to localStorage on first visit. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme-preference');
+      var theme = (stored === 'black' || stored === 'white') ? stored : 'white';
+      document.documentElement.setAttribute('data-theme', theme);
+    }());
+  </script>
   <link rel="stylesheet" href="weather.css" />
 </head>
 <body>
   <header>
     <h1>🌤️ US Cities Weather Forecast</h1>
     <p class="subtitle">Current conditions and forecast for major US cities</p>
+    <!-- Theme toggle radio button control -->
+    <fieldset class="theme-toggle" role="group">
+      <legend class="visually-hidden">Choose colour theme</legend>
+      <label class="theme-toggle__label">
+        <input class="theme-toggle__radio" type="radio" name="theme" value="white" />
+        White
+      </label>
+      <label class="theme-toggle__label">
+        <input class="theme-toggle__radio" type="radio" name="theme" value="black" />
+        Black
+      </label>
+    </fieldset>
   </header>
 
   <main>
@@ -65,19 +89,32 @@
   <script src="providers/primaryProvider.js"></script>
   <script src="providers/mockProvider.js"></script>
   <script src="providerRegistry.js"></script>
+  <script src="theme.js"></script>
   <script src="weather.js"></script>
   <script>
     (function () {
-      const filterSelect = document.getElementById('filter-condition');
-      const sortSelect = document.getElementById('sort-by');
-      const tbody = document.getElementById('weather-body');
-      const noResults = document.getElementById('no-results');
+      var filterSelect = document.getElementById('filter-condition');
+      var sortSelect = document.getElementById('sort-by');
+      var tbody = document.getElementById('weather-body');
+      var noResults = document.getElementById('no-results');
       document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US');
 
+      // Pre-select the radio button that matches the stored/active theme,
+      // then attach the change handler for live theme switching.
+      var stored = window.ThemeManager.getStoredTheme();
+      var themeRadios = document.querySelectorAll('input[name="theme"]');
+      var i;
+      for (i = 0; i < themeRadios.length; i++) {
+        themeRadios[i].checked = (themeRadios[i].value === stored);
+        themeRadios[i].addEventListener('change', function () {
+          window.ThemeManager.toggleTheme(this.value);
+        });
+      }
+
       function render() {
-        const condition = filterSelect.value;
-        const sortKey = sortSelect.value;
-        const data = WeatherApp.getFilteredData(condition, sortKey);
+        var condition = filterSelect.value;
+        var sortKey = sortSelect.value;
+        var data = WeatherApp.getFilteredData(condition, sortKey);
 
         tbody.innerHTML = '';
         if (data.length === 0) {
@@ -85,7 +122,7 @@
         } else {
           noResults.classList.add('hidden');
           data.forEach(function (row) {
-            const tr = document.createElement('tr');
+            var tr = document.createElement('tr');
             tr.innerHTML =
               '<td>' + row.city + '</td>' +
               '<td>' + row.state + '</td>' +

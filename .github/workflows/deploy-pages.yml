@@ -1,0 +1,105 @@
+# License: Proprietary. All rights reserved.
+# Automated deployment workflow for GitHub Pages
+# Triggered on every push to master (including PR merges)
+#
+# Architecture: two-job pipeline
+#   test   — installs dependencies and runs the Jest test suite (gate)
+#   deploy — uploads frontend/ as a Pages artifact and publishes via OIDC
+#
+# OIDC rationale: id-token: write allows the deploy job to exchange a short-lived
+# GitHub OIDC token for a Pages deployment token without storing any long-lived secret.
+#
+# Concurrency: cancel-in-progress: true means that if a second push arrives while a
+# deployment is still in progress, the older run is cancelled and the newer one wins,
+# ensuring GitHub Pages always reflects the most recent commit on master.
+#
+# Note: YAML workflow syntax cannot be unit-tested locally; validation happens via a
+# live push to master or via workflow_dispatch on a feature branch.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+# Minimal workflow-level read permission for checkout.
+# The deploy job overrides this with the additional scopes it needs.
+permissions:
+  contents: read
+
+# Serialise deployments so the newest commit always wins.
+# cancel-in-progress: true cancels any in-flight run when a newer push arrives.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # ── Gate job ──────────────────────────────────────────────────────────────
+  # Runs the full Jest test suite. The deploy job will not start unless this
+  # job completes successfully, preventing broken builds from reaching Pages.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # npm ci performs a clean install from package-lock.json, ensuring
+      # reproducible builds and faster CI runs than npm install.
+      - name: Install dependencies
+        run: npm ci
+
+      # needs: test on the deploy job means any Jest failure here
+      # will immediately skip the deploy job and fail the workflow.
+      - name: Run tests
+        run: npm test
+
+  # ── Deployment job ────────────────────────────────────────────────────────
+  # Packages frontend/ as a GitHub Pages artifact and deploys it via OIDC.
+  # Only runs when the test job above passes.
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test  # Test gate: deploy is skipped if any test step fails
+
+    # These permissions are scoped to this job only (principle of least privilege).
+    # pages: write   — allows uploading and activating the Pages deployment
+    # id-token: write — required for OIDC token exchange with the Pages service
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Validates that GitHub Pages is enabled for this repository and emits
+      # the base path used by the Pages CDN (important for repos served at a
+      # sub-path, e.g. https://org.github.io/repo/).
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Packages the static files in frontend/ into a Pages-compatible artifact.
+      # Only the frontend/ directory is uploaded — no server-side code, no secrets.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/
+
+      # Exchanges the OIDC token for a Pages deployment token, then activates
+      # the artifact uploaded in the previous step. The deployment URL is
+      # surfaced via the page_url output consumed by the environment.url above.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
